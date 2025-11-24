@@ -20,8 +20,8 @@ export class UserDAO {
    */
   async createUser(userData: UserCreate): Promise<User> {
     console.log('🔹 [USERDAO] Creando usuario en Firestore...');
-    const docId = userData.uid || db.collection('users').doc().id;  // Declarar docId primero
-    const userRef = db.collection('users').doc(docId);  // Usar docId
+    const docId = userData.uid || db.collection('users').doc().id;  // Declare docId first
+    const userRef = db.collection('users').doc(docId);  // Use docId
     const user: User = {
       id: userRef.id,
       name: userData.name,
@@ -63,7 +63,7 @@ export class UserDAO {
       name: data.name,
       lastname: data.lastname,
       email: data.email,
-      age: data.age,  // Cambiado de birthdate
+      age: data.age,  // Changed birthdate
       provider: data.provider,
     };
   }
@@ -93,7 +93,7 @@ export class UserDAO {
       name: data.name,
       lastname: data.lastname,
       email: data.email,
-      age: data.age,  // Cambiado de birthdate
+      age: data.age,  // Changed birthdate
       provider: data.provider,
     };
   }
@@ -115,7 +115,7 @@ export class UserDAO {
     if (updates.name) updateData.name = updates.name;
     if (updates.lastname) updateData.lastname = updates.lastname;
     if (updates.email) updateData.email = updates.email;
-    if (updates.age) updateData.age = updates.age;  // Cambiado de birthdate
+    if (updates.age) updateData.age = updates.age;  // Changed birthdate
 
     await userRef.update(updateData);
 
@@ -128,7 +128,7 @@ export class UserDAO {
       name: data.name,
       lastname: data.lastname,
       email: data.email,
-      age: data.age,  // Cambiado de birthdate
+      age: data.age,  // Changed birthdate
       provider: data.provider,
     };
   }

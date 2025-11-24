@@ -34,9 +34,9 @@ export interface UserCreate {
   lastname: string;
   email: string;
   password: string;
-  age: number;  // Cambiado de birthdate: string
+  age: number;  // Changed from birthdate: string
   provider?: string;
-  uid?: string;  // Agregado
+  uid?: string;  // Aggregate
 }
 
 /**
@@ -54,5 +54,5 @@ export interface UserUpdate {
   name?: string;
   lastname?: string;
   email?: string;
-  age?: number;  // Cambiado de birthdate: string
+  age?: number;  // Changed from birthdate: string
 }

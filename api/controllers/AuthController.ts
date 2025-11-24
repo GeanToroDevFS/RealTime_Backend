@@ -79,17 +79,17 @@ export class AuthController {
         password,
         displayName: `${name} ${lastname}`,
       });
-      // Usar UserDAO para guardar en Firestore (agregado password)
+      // Use UserDAO to save to Firestore (password added)
       const userData = await this.userDAO.createUser({
         name,
         lastname,
         email: normEmail,
-        password,  // Agregado
-        age,  // Número
+        password,  
+        age,  
         provider: 'email',
         uid: userRecord.uid,
       });
-      // Generar JWT (cambiado a userId para consistencia)
+      // Generate JWT (changed to userId for consistency)
       const token = jwt.sign({ userId: userRecord.uid }, process.env.JWT_SECRET!, { expiresIn: '24h' });
       res.status(201).json({
         message: 'Usuario registrado exitosamente',
@@ -134,7 +134,7 @@ export class AuthController {
 
       console.log('🔹 [LOGIN] Verificando credenciales con Firebase Auth REST API...');
 
-      // Usar Firebase Auth REST API para verificar email y password
+      // Use Firebase Auth REST API to verify email and password
       const apiKey = process.env.FIREBASE_API_KEY!;
       const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`, {
         method: 'POST',
@@ -160,17 +160,17 @@ export class AuthController {
       const uid = data.localId;  // UID del usuario
       console.log('✅ [LOGIN] Credenciales válidas, UID:', uid);
 
-      // Validaciones adicionales del usuario en Firebase (solo deshabilitada)
+      // Additional user validations in Firebase (disabled only)
       const userRecord = await auth.getUser(uid);
       if (userRecord.disabled) {
         console.warn('⚠️ [LOGIN] Usuario deshabilitado en Firebase');
         return res.status(403).json({ error: 'Cuenta deshabilitada' });
       }
 
-      // Generar JWT
+      // Generate JWT
       const token = jwt.sign({ userId: uid, email }, process.env.JWT_SECRET!, { expiresIn: '7d' });
 
-      // Obtener/crear datos de Firestore
+      // Get/create Firestore data
       let user = await this.userDAO.getUserById(uid);
       if (!user) {
         console.log('🔹 [LOGIN] Usuario no existe en Firestore, creando con datos de Firebase Auth...');
@@ -190,7 +190,7 @@ export class AuthController {
       }
 
       console.log('✅ [LOGIN] Login completado');
-      // Respuesta extendida con alias para frontend que pueda esperar firstName/lastName
+      // Extended answer with alias for frontend that can expect firstName/lastName
       res.json({
         message: 'Inicio de sesión exitoso',
         token,
@@ -214,7 +214,7 @@ export class AuthController {
   async loginSocial(req: Request, res: Response) {
     console.log('🔵 [LOGIN_SOCIAL] Solicitud de login social');
 
-    const { idToken, provider } = req.body; // idToken de Firebase, provider: 'google', 'facebook', 'github'
+    const { idToken, provider } = req.body; // Firebase idToken, provider: 'google', 'facebook', 'github'
 
     try {
       if (!idToken || !provider) {
@@ -233,15 +233,15 @@ export class AuthController {
       let user = await this.userDAO.getUserById(uid);
       if (!user) {
         console.log('🔹 [LOGIN_SOCIAL] Usuario no existe en Firestore, creando...');
-        // Crear usuario en Firestore con datos del token
+        // Create user in Firestore with token data
         const name = decodedToken.name || 'Usuario';
         const lastname = decodedToken.family_name || '';
-        const age = 25;  // Valor por defecto, el usuario puede actualizarlo después
+        const age = 25;  // Default value, the user can update it later
         const userCreate: UserCreate = {
           name,
           lastname,
           email: email!,
-          password: '', // No aplicable para sociales
+          password: '', // Not applicable to social services
           age,
           provider,
           uid: uid
@@ -250,7 +250,7 @@ export class AuthController {
       }
 
       console.log('✅ [LOGIN_SOCIAL] Generando JWT...');
-      // JWT consistente con userId
+      // JWT consistent with userId
       const token = jwt.sign(
         { userId: uid, email },
         process.env.JWT_SECRET!,
@@ -428,7 +428,7 @@ export class AuthController {
       const email = decoded.email;
 
       console.log('🔹 [RESET] Verificando si usuario existe en Firebase Auth...');
-      const userRecord = await auth.getUserByEmail(email);  // Verificar existencia
+      const userRecord = await auth.getUserByEmail(email);  // Check existence
 
       console.log('🔹 [RESET] Actualizando contraseña en Firebase Auth...');
       await auth.updateUser(userRecord.uid, {
@@ -443,14 +443,14 @@ export class AuthController {
     }
   }
 
-  // Para deleteMe, cambiar a deshabilitar
+  // To deleteMe, switch to disable.
   async deleteMe(req: Request, res: Response) {
     try {
       const userId = (req as any).user?.userId;
       if (!userId) return res.status(401).json({ error: 'Usuario no autenticado' });
-      // Deshabilitar en Firebase Auth (no eliminar)
+      // To deleteMe, switch to disable.
       await auth.updateUser(userId, { disabled: true });
-      // Eliminar de Firestore
+      // Remove from Firestore
       await this.userDAO.deleteUser(userId);
       res.json({ message: 'Cuenta desactivada. Puedes crear una nueva.' });
     } catch (error: any) {
