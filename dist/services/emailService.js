@@ -1,10 +1,4 @@
 "use strict";
-
-/**
- * @route DELETE /profile
- * @description Deletes (disables) the authenticated user's account.
- * @access Protected (requires JWT authentication).
- */
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -12,18 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendRecoveryEmail = void 0;
 const sib_api_v3_sdk_1 = __importDefault(require("sib-api-v3-sdk"));
 const dotenv_1 = __importDefault(require("dotenv"));
-
-/**
- * @description Logs the loading of Brevo configuration.
- */
 console.log('🔹 [EMAIL] Cargando configuración de Brevo...');
-
-// Load environment variables from .env file.
 dotenv_1.default.config();
-
-/**
- * @description Validates the presence of required environment variables for Brevo.
- */
 if (!process.env.BREVO_API_KEY) {
     console.error('❌ BREVO_API_KEY no definida');
     throw new Error('Falta BREVO_API_KEY en variables de entorno');
@@ -31,10 +15,6 @@ if (!process.env.BREVO_API_KEY) {
 if (!process.env.EMAIL_SENDER) {
     console.warn('⚠️ EMAIL_SENDER no definida, usando por defecto');
 }
-
-/**
- * @description Logs the initialization of the Brevo client.
- */
 console.log('🔹 [EMAIL] Inicializando cliente Brevo...');
 const defaultClient = sib_api_v3_sdk_1.default.ApiClient.instance;
 const apiKey = defaultClient.authentications['api-key'];
