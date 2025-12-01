@@ -9,8 +9,40 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const emailService_1 = require("../services/emailService");
 const UserDAO_1 = require("../dao/UserDAO");
 const node_fetch_1 = __importDefault(require("node-fetch"));
+
+/**
+ * @class AuthController
+ * @description Controller class for handling authentication-related operations.
+ * This class provides methods for user registration, login (email/password and social), 
+ * profile management, password recovery, and account deletion. It interacts with Firebase 
+ * Authentication and a UserDAO for database operations.
+ * 
+ * @requires ../config/firebase
+ * @requires jsonwebtoken
+ * @requires ../services/emailService
+ * @requires ../dao/UserDAO
+ * @requires node-fetch
+ * 
+ * @example
+ * // Usage in an Express route:
+ * const authController = new AuthController();
+ * app.post('/register', authController.register.bind(authController));
+ */
 class AuthController {
+
+    /**
+     * @private
+     * @description Instance of UserDAO for database operations.
+     * @type {UserDAO}
+     */
     userDAO = new UserDAO_1.UserDAO();
+
+    /**
+     * Calculates the age based on a given birth date.
+     * 
+     * @param {string|Date} birthDate - The birth date in string or Date format.
+     * @returns {number} The calculated age in years.
+     */
     calculateAge(birthDate) {
         const today = new Date();
         const birth = new Date(birthDate);
@@ -21,6 +53,18 @@ class AuthController {
         }
         return age;
     }
+
+    /**
+     * Handles user registration with email and password.
+     * Validates input, creates a user in Firebase Auth, stores user data in the database,
+     * and generates a JWT token.
+     * 
+     * @async
+     * @param {Object} req - Express request object containing user data in req.body.
+     * @param {Object} res - Express response object.
+     * @returns {Promise<void>} Responds with JSON containing user data and token or error.
+     * @throws {Error} If registration fails due to validation or server issues.
+     */
     async register(req, res) {
         try {
             const { name, lastname, email, password, confirmPassword } = req.body;
@@ -65,6 +109,18 @@ class AuthController {
             res.status(500).json({ error: 'Error interno del servidor' });
         }
     }
+
+    /**
+     * Handles user login with email and password.
+     * Verifies credentials using Firebase Auth REST API, creates or retrieves user data,
+     * and generates a JWT token.
+     * 
+     * @async
+     * @param {Object} req - Express request object containing email and password in req.body.
+     * @param {Object} res - Express response object.
+     * @returns {Promise<void>} Responds with JSON containing user data and token or error.
+     * @throws {Error} If login fails due to invalid credentials or server issues.
+     */
     async login(req, res) {
         console.log('🔵 [LOGIN] Solicitud recibida con email:', req.body.email);
         const rawEmail = req.body.email;
@@ -144,6 +200,17 @@ class AuthController {
             res.status(500).json({ error: 'Error interno del servidor' });
         }
     }
+
+    /**
+     * Handles social login (e.g., Google, Facebook) using an ID token.
+     * Verifies the token, creates or retrieves user data, and generates a JWT token.
+     * 
+     * @async
+     * @param {Object} req - Express request object containing idToken and provider in req.body.
+     * @param {Object} res - Express response object.
+     * @returns {Promise<void>} Responds with JSON containing user data and token or error.
+     * @throws {Error} If social login fails due to invalid token or server issues.
+     */
     async loginSocial(req, res) {
         console.log('🔵 [LOGIN_SOCIAL] Solicitud de login social');
         const { idToken, provider } = req.body;
@@ -197,6 +264,16 @@ class AuthController {
             res.status(500).json({ error: 'Error interno del servidor' });
         }
     }
+
+    /**
+     * Retrieves the authenticated user's profile.
+     * 
+     * @async
+     * @param {Object} req - Express request object with authenticated user in req.user.
+     * @param {Object} res - Express response object.
+     * @returns {Promise<void>} Responds with JSON containing user profile or error.
+     * @throws {Error} If user is not authenticated or server issues occur.
+     */
     async getProfile(req, res) {
         console.log('🟡 [PROFILE] Solicitud de perfil para usuario:', req.user?.userId);
         try {
@@ -229,6 +306,16 @@ class AuthController {
             res.status(500).json({ error: 'Error interno del servidor' });
         }
     }
+
+    /**
+     * Updates the authenticated user's profile.
+     * 
+     * @async
+     * @param {Object} req - Express request object with updates in req.body and user in req.user.
+     * @param {Object} res - Express response object.
+     * @returns {Promise<void>} Responds with JSON containing updated user data or error.
+     * @throws {Error} If user is not authenticated or server issues occur.
+     */
     async updateProfile(req, res) {
         console.log('🟠 [UPDATE] Solicitud de actualización para usuario:', req.user?.userId);
         const { name, lastname, email, age } = req.body;
@@ -260,6 +347,17 @@ class AuthController {
             res.status(500).json({ error: 'Error interno del servidor' });
         }
     }
+
+    /**
+     * Initiates password recovery by sending a reset email.
+     * Generates a reset token and sends it via email.
+     * 
+     * @async
+     * @param {Object} req - Express request object with email in req.body.
+     * @param {Object} res - Express response object.
+     * @returns {Promise<void>} Responds with success message or error.
+     * @throws {Error} If email sending fails or server issues occur.
+     */
     async forgotPassword(req, res) {
         console.log('🔴 [FORGOT] Solicitud de recuperación para email:', req.body.email);
         const { email } = req.body;
@@ -280,6 +378,17 @@ class AuthController {
             res.status(500).json({ error: 'Error interno del servidor' });
         }
     }
+
+    /**
+     * Resets the user's password using a provided token.
+     * Verifies the token and updates the password in Firebase Auth.
+     * 
+     * @async
+     * @param {Object} req - Express request object with token and newPassword in req.body.
+     * @param {Object} res - Express response object.
+     * @returns {Promise<void>} Responds with success message or error.
+     * @throws {Error} If token is invalid or server issues occur.
+     */
     async resetPassword(req, res) {
         console.log('🟣 [RESET] Solicitud de reset de contraseña');
         const { token, newPassword } = req.body;
@@ -305,6 +414,17 @@ class AuthController {
             res.status(500).json({ error: 'Error interno del servidor' });
         }
     }
+
+    /**
+     * Deletes or disables the authenticated user's account.
+     * Disables the user in Firebase Auth and deletes from the database.
+     * 
+     * @async
+     * @param {Object} req - Express request object with authenticated user in req.user.
+     * @param {Object} res - Express response object.
+     * @returns {Promise<void>} Responds with success message or error.
+     * @throws {Error} If deletion fails or user is not authenticated.
+     */
     async deleteMe(req, res) {
         try {
             const userId = req.user?.userId;

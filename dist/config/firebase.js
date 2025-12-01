@@ -37,6 +37,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.auth = exports.db = void 0;
+
+/**
+ * @module FirebaseInitialization
+ * @description This module initializes the Firebase Admin SDK using environment variables.
+ * It loads configuration from a .env file, verifies required variables, and sets up Firestore and Authentication services.
+ * The module exports the Firestore database instance (`db`) and the Authentication instance (`auth`).
+ * 
+ * Environment variables required:
+ * - `FIREBASE_PROJECT_ID`: The Firebase project ID.
+ * - `FIREBASE_SERVICE_ACCOUNT_KEY`: A JSON string representing the service account key.
+ * 
+ * If any required variables are missing, an error is thrown.
+ * 
+ * Logging is performed to indicate the status of initialization, with emojis for visual feedback.
+ * 
+ * @requires firebase-admin
+ * @requires dotenv
+ * 
+ * @example
+ * // Usage in another module:
+ * const { db, auth } = require('./this-module');
+ * // Now use db for Firestore operations or auth for authentication tasks.
+ */
 const admin = __importStar(require("firebase-admin"));
 const dotenv_1 = __importDefault(require("dotenv"));
 console.log('🔹 [FIREBASE] Cargando configuración...');
@@ -52,8 +75,22 @@ admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     projectId: process.env.FIREBASE_PROJECT_ID,
 });
+
+/**
+ * The Firestore database instance initialized with the Firebase Admin SDK.
+ * Use this to perform database operations like reading, writing, or querying documents.
+ * 
+ * @type {admin.firestore.Firestore}
+ */
 const db = admin.firestore();
 exports.db = db;
+
+/**
+ * The Firebase Authentication instance initialized with the Firebase Admin SDK.
+ * Use this for server-side authentication tasks, such as verifying tokens or managing users.
+ * 
+ * @type {admin.auth.Auth}
+ */
 const auth = admin.auth();
 exports.auth = auth;
 console.log('✅ [FIREBASE] Cliente inicializado correctamente.');
