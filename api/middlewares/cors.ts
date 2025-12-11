@@ -32,10 +32,8 @@
  * @constant {import('cors').CorsOptions} corsMiddleware - Preconfigured CORS middleware instance.
  */
 
-// 👇 **FIX MÍNIMO PARA RENDER & TS7016**
-declare module 'cors';
-
-import cors, { CorsOptions } from 'cors';
+import cors from "cors";
+import type { CorsOptions } from "cors";
 
 const corsOptions: CorsOptions = {
   origin: (
@@ -43,21 +41,21 @@ const corsOptions: CorsOptions = {
     callback: (err: Error | null, allowed?: boolean) => void
   ) => {
     const allowedOrigins = [
-      'http://localhost:3000',
-      'http://localhost:5173',
-      process.env.FRONTEND_URL || 'https://frontend-real-time.vercel.app',
+      "http://localhost:3000",
+      "http://localhost:5173",
+      process.env.FRONTEND_URL || "https://frontend-real-time.vercel.app",
     ];
 
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       console.warn(`🚫 [CORS] Origen no permitido: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
+      callback(new Error("Not allowed by CORS"));
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
 
 /**
