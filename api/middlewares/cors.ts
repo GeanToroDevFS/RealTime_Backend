@@ -32,6 +32,9 @@
  * @constant {import('cors').CorsOptions} corsMiddleware - Preconfigured CORS middleware instance.
  */
 
+// 👇 **FIX MÍNIMO PARA RENDER & TS7016**
+declare module 'cors';
+
 import cors, { CorsOptions } from 'cors';
 
 const corsOptions: CorsOptions = {
