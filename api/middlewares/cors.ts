@@ -31,10 +31,14 @@
  *
  * @constant {import('cors').CorsOptions} corsMiddleware - Preconfigured CORS middleware instance.
  */
-import cors from 'cors';
 
-const corsMiddleware = cors({
-  origin: (origin, callback) => {
+import cors, { CorsOptions } from 'cors';
+
+const corsOptions: CorsOptions = {
+  origin: (
+    origin: string | undefined,
+    callback: (err: Error | null, allowed?: boolean) => void
+  ) => {
     const allowedOrigins = [
       'http://localhost:3000',
       'http://localhost:5173',
@@ -51,6 +55,12 @@ const corsMiddleware = cors({
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-});
+};
+
+/**
+ * Middleware CORS con todas las opciones aplicadas.
+ */
+const corsMiddleware = cors(corsOptions);
 
 export default corsMiddleware;
+export { corsOptions };
