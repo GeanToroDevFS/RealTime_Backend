@@ -157,7 +157,7 @@ export class AuthController {
         return res.status(401).json({ error: 'Credenciales inválidas' });
       }
       const data = await response.json() as any;
-      const uid = data.localId;  // UID del usuario
+      const uid = data.localId;  // User UID
       console.log('✅ [LOGIN] Credenciales válidas, UID:', uid);
 
       // Additional user validations in Firebase (disabled only)
@@ -336,7 +336,7 @@ export class AuthController {
   async updateProfile(req: Request, res: Response) {
     console.log('🟠 [UPDATE] Solicitud de actualización para usuario:', (req as any).user?.userId);
 
-    const { name, lastname, email, age } = req.body;  // Cambiado de birthdate
+    const { name, lastname, email, age } = req.body;  // Changed birthdate
 
     try {
       const userId = (req as any).user?.userId;
@@ -345,7 +345,7 @@ export class AuthController {
         return res.status(401).json({ error: 'Usuario no autenticado' });
       }
 
-      const updates: UserUpdate = { name, lastname, email, age };  // Cambiado de birthdate
+      const updates: UserUpdate = { name, lastname, email, age };  // Changed birthdate
       const updatedUser = await this.userDAO.updateUser(userId, updates);
 
       console.log('✅ [UPDATE] Perfil actualizado');
